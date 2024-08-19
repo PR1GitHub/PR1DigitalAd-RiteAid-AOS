@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PR1DigitalAd"
+rootProject.name = "PR1DigitalAd-RiteAid-AOS"
 include(":app")
 include(":PR1DigitalAd")

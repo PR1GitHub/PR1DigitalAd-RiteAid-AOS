@@ -1,4 +1,4 @@
-package com.purered.pr1digitalad
+package com.purered.pr1digitalad_riteaid_aos
 
 import org.junit.Test
 

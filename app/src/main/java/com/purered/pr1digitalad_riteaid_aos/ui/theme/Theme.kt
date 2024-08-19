@@ -1,4 +1,4 @@
-package com.purered.pr1digitalad.ui.theme
+package com.purered.pr1digitalad_riteaid_aos.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun PR1DigitalAdTheme(
+fun PR1DigitalAdRiteAidAOSTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

@@ -2,6 +2,7 @@ package com.purered.pr1digitalad
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Environment
 import android.util.AttributeSet
 import android.view.View
 import android.webkit.JavascriptInterface
@@ -40,8 +41,9 @@ data class DigitalAdInput(
     val viewMode:String,
     val cartItems: List<Map<String, Any>>?,
     val clippedCoupons: List<Map<String, Any>>?,
+    var environment: String? ="PROD",// "QA",
     var payloadJsonString:String?,
-    var callbackHandler: (String, JSONArray) -> Unit
+    var callbackHandler: (String, JSONArray) -> Unit,
 )
 
 class DigitalAd  @JvmOverloads constructor(
@@ -86,12 +88,23 @@ class DigitalAd  @JvmOverloads constructor(
         webView.addJavascriptInterface(this,"pr1NativeWrapper")
 
         // Validate Client with API call then load WebView..
-
         //val url:String ="https://oms-kroger-webapp-oms-qa.azurewebsites.net/public/DACpublic.html?id=11847"
         //val url:String ="https://pr1-std-digitalad-dev-client-app.azurewebsites.net/examples/riteaiddev.html?key=pgH7QzFHJx4w46fI~5Uzi4RvtTwlEXp3"
         //  val url:String = "https://pr1-std-digitalad-dev-client-app.azurewebsites.net/native/index.html?env=aos"
-        //val url:String = "https://pr1dev.przone.net/pr1da/native/index.html?env=aos"
-        val url:String = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+
+//https://pr1riteaid-staging.przone.net/pr1da/native/index.html
+//
+//https://pr1riteaid-production.przone.net/pr1da/native/index.html
+        var prodURL = "https://pr1riteaid-production.przone.net/pr1da/native/index.html?env=aos";
+        var stagingUrl = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+
+        var url:String =prodURL;
+
+        if(config.environment?.lowercase() == "staging" || config.environment?.lowercase() == "qa"){
+            url = stagingUrl
+        }
+
+
         loadUrl(url)
 
 

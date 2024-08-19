@@ -1,12 +1,6 @@
-//plugins {
-//    alias(libs.plugins.android.library)
-//    alias(libs.plugins.jetbrains.kotlin.android)
-//}
-
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("maven-publish")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
@@ -35,24 +29,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-}
-
-publishing{
-    publications{
-        create<MavenPublication>("release"){
-
-
-            afterEvaluate {
-                from(components.findByName("release"))
-                //groupId = "com.github.PureRED-dev"
-                groupId = "com.purered.pr1digitalad"
-                artifactId = "pr1digitalad"
-                version = "0.0.9"
-
-                //com.purered.pr1digitalad:pr1digitalad:0.0.5
-            }
-        }
     }
 }
 

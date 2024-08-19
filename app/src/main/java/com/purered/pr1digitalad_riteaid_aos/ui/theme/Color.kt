@@ -1,4 +1,4 @@
-package com.purered.pr1digitalad.ui.theme
+package com.purered.pr1digitalad_riteaid_aos.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

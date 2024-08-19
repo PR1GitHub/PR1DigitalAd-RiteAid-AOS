@@ -1,19 +1,14 @@
-//plugins {
-//    alias(libs.plugins.android.application)
-//    alias(libs.plugins.jetbrains.kotlin.android)
-//}
-
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
-    namespace = "com.purered.pr1digitalad"
+    namespace = "com.purered.pr1digitalad_riteaid_aos"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.purered.pr1digitalad"
+        applicationId = "com.purered.pr1digitalad_riteaid_aos"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
