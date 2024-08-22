@@ -1,6 +1,12 @@
+//plugins {
+//    alias(libs.plugins.android.library)
+//    alias(libs.plugins.jetbrains.kotlin.android)
+//}
+
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("maven-publish")
 }
 
 android {
@@ -29,6 +35,21 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+}
+
+publishing{
+    publications{
+        create<MavenPublication>("release"){
+
+
+            afterEvaluate {
+                from(components.findByName("release"))
+                groupId = "com.purered.pr1digitalad_riteaid_ios"
+                artifactId = "pr1digitalad_riteaid_ios"
+                version = "0.0.12"
+            }
+        }
     }
 }
 
