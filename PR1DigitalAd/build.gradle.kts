@@ -1,12 +1,69 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 //plugins {
-//    alias(libs.plugins.android.application) apply false
-//    alias(libs.plugins.jetbrains.kotlin.android) apply false
-//    alias(libs.plugins.android.library) apply false
+//    alias(libs.plugins.android.library)
+//    alias(libs.plugins.jetbrains.kotlin.android)
 //}
 
 plugins {
-    id("com.android.application") version "8.4.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
-    id("com.android.library") version "8.4.0" apply false
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("maven-publish")
+}
+
+android {
+    namespace = "com.purered.pr1digitalad"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 24
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+publishing{
+    publications{
+        create<MavenPublication>("release"){
+
+
+            afterEvaluate {
+                from(components.findByName("release"))
+                //groupId = "com.github.PureRED-dev"
+                groupId = "com.purered.pr1digitalad"
+                artifactId = "pr1digitalad"
+                version = "0.0.14"
+
+                //com.purered.pr1digitalad:pr1digitalad:0.0.5
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.google.code.gson:gson:2.8.8")
 }
