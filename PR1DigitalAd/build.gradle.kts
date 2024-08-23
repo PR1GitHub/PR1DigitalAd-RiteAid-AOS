@@ -46,9 +46,9 @@ publishing{
             afterEvaluate {
                 from(components.findByName("release"))
                 //groupId = "com.github.PureRED-dev"
-                groupId = "com.purered.pr1digitalad"
-                artifactId = "pr1digitalad"
-                version = "0.0.14"
+                groupId = "com.purered.pr1digitalad_riteaid_ios"
+                artifactId = "pr1digitalad_riteaid_ios"
+                version = "0.0.15"
 
                 //com.purered.pr1digitalad:pr1digitalad:0.0.5
             }

@@ -40,8 +40,17 @@ data class DigitalAdInput(
     val viewMode:String,
     val cartItems: List<Map<String, Any>>?,
     val clippedCoupons: List<Map<String, Any>>?,
+    var environment: String? ="PROD",// "QA",
     var payloadJsonString:String?,
-    var callbackHandler: (String, JSONArray) -> Unit
+    var callbackHandler: (ActionPayload) -> Unit,
+)
+data class ActionPayload(
+    var status: String? = "",
+    var message: String? = "",
+    var value:Any?,
+    var actionContext: Any? = null,
+    var actionName: String? = "",
+    var customData: String? = ""
 )
 
 class DigitalAd  @JvmOverloads constructor(
@@ -70,6 +79,8 @@ class DigitalAd  @JvmOverloads constructor(
         val gson = Gson()
         return gson.toJson(map)
     }
+
+
     private fun init(context: Context) {
         // Initialize WebView settings, such as enabling JavaScript
         webView.settings.javaScriptEnabled = true
@@ -86,12 +97,23 @@ class DigitalAd  @JvmOverloads constructor(
         webView.addJavascriptInterface(this,"pr1NativeWrapper")
 
         // Validate Client with API call then load WebView..
-
         //val url:String ="https://oms-kroger-webapp-oms-qa.azurewebsites.net/public/DACpublic.html?id=11847"
         //val url:String ="https://pr1-std-digitalad-dev-client-app.azurewebsites.net/examples/riteaiddev.html?key=pgH7QzFHJx4w46fI~5Uzi4RvtTwlEXp3"
         //  val url:String = "https://pr1-std-digitalad-dev-client-app.azurewebsites.net/native/index.html?env=aos"
-        //val url:String = "https://pr1dev.przone.net/pr1da/native/index.html?env=aos"
-        val url:String = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+        //https://pr1riteaid-staging.przone.net/pr1da/native/index.html
+        //https://pr1riteaid-production.przone.net/pr1da/native/index.html
+
+
+        var prodURL = "https://pr1riteaid-production.przone.net/pr1da/native/index.html?env=aos";
+        var stagingUrl = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+
+        var url:String = prodURL;
+
+        if(config.environment?.lowercase() == "staging" || config.environment?.lowercase() == "qa"){
+            url = stagingUrl
+        }
+
+
         loadUrl(url)
 
 
@@ -132,78 +154,110 @@ class DigitalAd  @JvmOverloads constructor(
         return webView
     }
 
-
     fun updateLayoutParams(layoutParams: LinearLayout.LayoutParams){
-
         webView.layoutParams = layoutParams
     }
 
-    fun validateCreds(name:String,password:String){
-        webView.evaluateJavascript("validateCreds('${name}', '${password}');"){returnValue:String->{
-            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
-        }}
-
-    }
-
-    fun dispatch(action: String,payload: String){
-        val payLoadString:String =  payload
-        print(action)
-        print(payLoadString)
-        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
-            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
-        }}
-    }
-    fun dispatch(action: String,payload: JSONArray){
-        val payLoadString:String =  payload.toString()
-        print(action)
-        print(payLoadString)
-        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
-            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
-        }}
-    }
-    fun dispatch(action: String,payload: JSONObject){
-        val payLoadString:String =  payload.toString()
-        print(action)
-        print(payLoadString)
-        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
-            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
-        }}
-    }
-
-
-
-    @JavascriptInterface
-    fun callBackHandler(actionType:String,payloadJsonString: String):String{
-        println(actionType)
-        println(payloadJsonString)
-
-
-        var isSuccess:Boolean = false;
-        var error:String = "";
-
-        try {
-            val jsonObject: JSONArray = JSONArray("[]")
-            config.callbackHandler(actionType,jsonObject);
-            isSuccess = true
-        } catch (e: Exception) {
-            println("Exception occurred: ${e.message}")
-            isSuccess = false;
-            error = e.message ?: ""
-        }
-
-        return "{'isSuccess': $isSuccess , 'error' : $error}"
-    }
-
-
-    @JavascriptInterface
-    fun showToastMsg(msg:String){
-        Toast.makeText(this.parentContext,msg, Toast.LENGTH_LONG).show()
-    }
-
-    // Method to load a URL into the WebView
     fun loadUrl(url: String) {
         webView.loadUrl(url)
     }
 
-    // Other methods to handle WebView events or customize behavior can be added here
+
+
+
+    @JavascriptInterface
+    fun callBackHandler(payloadJsonString: String):String{
+
+
+        try {
+
+            val actionPayload:ActionPayload = Gson().fromJson(payloadJsonString, ActionPayload::class.java)
+
+
+
+            config.callbackHandler(actionPayload);
+
+
+
+            return "success";
+        } catch (e: Exception) {
+            println("callBackHandler .... failed")
+            println(e)
+            return "failed";
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+    fun  dispatch(payload: ActionPayload){
+        val payLoadString:String =  Gson().toJson(payload)
+
+        val jSScriptString =  """ 
+                                    digitalAdHandler($payLoadString)
+                                """.trimIndent()
+        webView.post {
+            webView.evaluateJavascript(jSScriptString) { returnValue: String ->
+                {
+                    Toast.makeText(this.parentContext, returnValue, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+//
+//    fun dispatch(action: String,payload: String){
+//        val payLoadString:String =  payload
+//        print(action)
+//        print(payLoadString)
+//        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
+//            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
+//        }}
+//    }
+//    fun dispatch(action: String,payload: JSONArray){
+//        val payLoadString:String =  payload.toString()
+//        print(action)
+//        print(payLoadString)
+//        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
+//            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
+//        }}
+//    }
+//    fun dispatch(action: String,payload: JSONObject){
+//        val payLoadString:String =  payload.toString()
+//        print(action)
+//        print(payLoadString)
+//        webView.evaluateJavascript("digitalAdHandler('${action}','${payLoadString}');"){returnValue:String->{
+//            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
+//        }}
+//    }
+
+
+//
+//    @JavascriptInterface
+//    fun showToastMsg(msg:String){
+//        Toast.makeText(this.parentContext,msg, Toast.LENGTH_LONG).show()
+//    }
+
+
+
+
+//    fun validateCreds(name:String,password:String){
+//        webView.evaluateJavascript("validateCreds('${name}', '${password}');"){returnValue:String->{
+//            Toast.makeText(this.parentContext,returnValue, Toast.LENGTH_LONG).show()
+//        }}
+//
+//    }
+
+
 }
