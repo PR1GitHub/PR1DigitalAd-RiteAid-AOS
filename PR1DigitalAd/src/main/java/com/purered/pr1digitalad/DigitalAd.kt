@@ -144,7 +144,7 @@ class DigitalAd  @JvmOverloads constructor(
                 // super.onReceivedError(view, request, error)
                 print(error)
 
-                Toast.makeText(context,"Error : while loading webview.!!", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context,"Error : while loading webview.!!", Toast.LENGTH_LONG).show()
             }
         }
         // Other WebView configurations can be applied here
@@ -205,7 +205,7 @@ class DigitalAd  @JvmOverloads constructor(
         webView.post {
             webView.evaluateJavascript(jSScriptString) { returnValue: String ->
                 {
-                    Toast.makeText(this.parentContext, returnValue, Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this.parentContext, returnValue, Toast.LENGTH_LONG).show()
                 }
             }
         }
