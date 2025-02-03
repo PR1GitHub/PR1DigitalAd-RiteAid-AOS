@@ -35,6 +35,7 @@ import org.json.JSONObject
 
 
 data class DigitalAdInput(
+    val webUrl: String,
     val apiKey:String,
     val storeKey:String,
     val viewMode:String,
@@ -104,15 +105,18 @@ class DigitalAd  @JvmOverloads constructor(
         //https://pr1riteaid-production.przone.net/pr1da/native/index.html
 
 
-        var prodURL = "https://pr1riteaid-production.przone.net/pr1da/native/index.html?env=aos";
-        var stagingUrl = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+        //var prodURL = "https://pr1riteaid-production.przone.net/pr1da/native/index.html?env=aos";
+        //var stagingUrl = "https://pr1riteaid-staging.przone.net/pr1da/native/index.html?env=aos"
+
+        var amcString = config.webUrl
+        var prodURL = "https://${amcString}-production.przone.net/pr1da/native/index.html?env=aos";
+        var stagingUrl = "https://${amcString}-staging.przone.net/pr1da/native/index.html?env=aos"
 
         var url:String = prodURL;
 
         if(config.environment?.lowercase() == "staging" || config.environment?.lowercase() == "qa"){
             url = stagingUrl
         }
-
 
         loadUrl(url)
 
